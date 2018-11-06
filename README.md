@@ -45,8 +45,8 @@ Please be considerate to groups hosting manga series and don't use this tool to 
 ## To-do
 
 - [ ] Add download progress
+- [ ] Add option to specify download path
 - [ ] Test support for Windows computers
-- [ ]
 
 ### License
 

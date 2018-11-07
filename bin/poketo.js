@@ -81,9 +81,7 @@ async function main() {
 
   const domain = url.hostname;
   const downloadPath = './';
-  const formattedDownloadPath = path.normalize(
-    path.relative(os.homedir(), downloadPath)
-  );
+  const formattedDownloadPath = path.normalize(downloadPath);
 
   const action = type === 'series' ? poketo.getSeries : poketo.getChapter;
 
@@ -142,13 +140,42 @@ async function main() {
       if (type === 'series') {
         downloadingCount = series.chapters.length;
         downloadingNoun = 'chapters';
-        downloadPromiseFn = () => download.series(series.id, downloadPath);
+        let chapterCount = 0;
+        downloadPromiseFn = () =>
+          download.series(series.id, {
+            downloadPath,
+            onChapterComplete: stats => {
+              chapterCount = stats.downloaded;
+              setText(
+                `Downloading ${downloadingNoun} (${stats.downloaded} of ${
+                  stats.total
+                })`
+              );
+            },
+            onPageComplete: stats => {
+              setText(
+                `Downloading ${downloadingNoun} (${chapterCount} of ${downloadingCount}) (page ${
+                  stats.downloaded
+                } of ${stats.total})`
+              );
+            }
+          });
       } else {
         const chapterNumber = chapter.id.split(':').pop();
 
         downloadingCount = chapter.pages.length;
         downloadingNoun = 'pages';
-        downloadPromiseFn = () => download.chapter(chapter.id, downloadPath);
+        downloadPromiseFn = () =>
+          download.chapter(chapter.id, downloadPath, {
+            downloadPath,
+            onPageComplete: stats => {
+              setText(
+                `Downloading ${downloadingNoun} (${stats.downloaded} of ${
+                  stats.total
+                })`
+              );
+            }
+          });
       }
 
       setText(`Downloading ${downloadingCount} ${downloadingNoun}`);

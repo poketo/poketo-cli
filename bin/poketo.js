@@ -1,28 +1,28 @@
 #!/usr/bin/env node
 
-const { URL } = require("url");
-const path = require("path");
-const os = require("os");
-const kleur = require("kleur");
-const meow = require("meow");
-const checkForUpdate = require("update-check");
-const poketo = require("poketo");
+const { URL } = require('url');
+const path = require('path');
+const os = require('os');
+const kleur = require('kleur');
+const meow = require('meow');
+const checkForUpdate = require('update-check');
+const poketo = require('poketo');
 
-const pkg = require("../package.json");
-const fetch = require("../lib/fetch");
-const download = require("../lib/download");
-const output = require("../lib/output");
-const utils = require("../lib/utils");
-const invariant = require("../lib/utils").invariant;
+const pkg = require('../package.json');
+const fetch = require('../lib/fetch');
+const download = require('../lib/download');
+const output = require('../lib/output');
+const utils = require('../lib/utils');
+const invariant = require('../lib/utils').invariant;
 
-process.title = "poketo";
+process.title = 'poketo';
 const cli = meow(
   `
-  ${kleur.gray("Usage:")}
+  ${kleur.gray('Usage:')}
 
     $ poketo <url | id>
 
-  ${kleur.gray("Examples:")}
+  ${kleur.gray('Examples:')}
 
     Download a chapter
     ${kleur.blue(`
@@ -44,10 +44,10 @@ if (cli.input.length < 1) {
 const getPoketoErrorMessage = (err, url) => {
   console.log(err.stack);
   switch (err.code) {
-    case "UNSUPPORTED_SITE":
+    case 'UNSUPPORTED_SITE':
       return `${url} is not a supported site`;
       break;
-    case "INVALID_URL":
+    case 'INVALID_URL':
       return `${url} is not a supported URL`;
   }
 
@@ -76,16 +76,16 @@ async function main() {
   const input = cli.input[0];
 
   const type = poketo.getType(input);
-  const isUrl = input.startsWith("http");
+  const isUrl = input.startsWith('http');
   const url = new URL(isUrl ? input : poketo.constructUrl(input));
 
   const domain = url.hostname;
-  const downloadPath = "./";
+  const downloadPath = './';
   const formattedDownloadPath = path.normalize(
     path.relative(os.homedir(), downloadPath)
   );
 
-  const action = type === "series" ? poketo.getSeries : poketo.getChapter;
+  const action = type === 'series' ? poketo.getSeries : poketo.getChapter;
 
   let metadata;
 
@@ -97,7 +97,7 @@ async function main() {
 
         setText(`Reading ${type} from ${kleur.yellow(domain)}`);
 
-        if (type === "series") {
+        if (type === 'series') {
           series = await fetch.seriesByUrl(url.href);
         } else {
           chapter = await fetch.chapterByUrl(url.href);
@@ -106,16 +106,16 @@ async function main() {
           chapter = { ...chapterMetadata, ...chapter };
         }
 
-        const object = type === "series" ? series : chapter;
+        const object = type === 'series' ? series : chapter;
         const title =
-          type === "chapter"
+          type === 'chapter'
             ? [
-                "Chapter ",
+                'Chapter ',
                 object.chapterNumber,
-                object.title ? ": " + object.title : null
+                object.title ? ': ' + object.title : null
               ]
                 .filter(Boolean)
-                .join("")
+                .join('')
             : object.title;
 
         setText(
@@ -124,7 +124,7 @@ async function main() {
 
         return { series, chapter };
       },
-      { color: "yellow" }
+      { color: 'yellow' }
     );
   } catch (err) {
     const message = getPoketoErrorMessage(err, url);
@@ -139,15 +139,15 @@ async function main() {
 
       const { series, chapter } = metadata;
 
-      if (type === "series") {
+      if (type === 'series') {
         downloadingCount = series.chapters.length;
-        downloadingNoun = "chapters";
+        downloadingNoun = 'chapters';
         downloadPromiseFn = () => download.series(series.id, downloadPath);
       } else {
-        const chapterNumber = chapter.id.split(":").pop();
+        const chapterNumber = chapter.id.split(':').pop();
 
         downloadingCount = chapter.pages.length;
-        downloadingNoun = "pages";
+        downloadingNoun = 'pages';
         downloadPromiseFn = () => download.chapter(chapter.id, downloadPath);
       }
 
@@ -159,7 +159,7 @@ async function main() {
 
       return { count: downloadingCount, noun: downloadingNoun };
     },
-    { color: "yellow" }
+    { color: 'yellow' }
   );
 
   process.exit(0);

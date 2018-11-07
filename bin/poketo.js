@@ -42,7 +42,6 @@ if (cli.input.length < 1) {
 }
 
 const getPoketoErrorMessage = (err, url) => {
-  console.log(err.stack);
   switch (err.code) {
     case 'UNSUPPORTED_SITE':
       return `${url} is not a supported site`;
@@ -81,9 +80,7 @@ async function main() {
 
   const domain = url.hostname;
   const downloadPath = './';
-  const formattedDownloadPath = path.normalize(
-    path.relative(os.homedir(), downloadPath)
-  );
+  const formattedDownloadPath = path.normalize(downloadPath);
 
   const action = type === 'series' ? poketo.getSeries : poketo.getChapter;
 
@@ -139,19 +136,46 @@ async function main() {
 
       const { series, chapter } = metadata;
 
+      const getChapterFromStats = stats =>
+        `(${stats.downloaded} of ${stats.total})`;
+      const getPageFromStats = stats =>
+        `(page ${stats.downloaded} of ${stats.total})`;
+
       if (type === 'series') {
         downloadingCount = series.chapters.length;
         downloadingNoun = 'chapters';
-        downloadPromiseFn = () => download.series(series.id, downloadPath);
+
+        let chapterStats = { downloaded: 0, total: downloadingCount };
+
+        downloadPromiseFn = () =>
+          download.series(series.id, {
+            downloadPath,
+            onChapterComplete: stats => {
+              chapterStats = stats;
+            },
+            onPageComplete: stats => {
+              setText(
+                `Downloading chapters ${getChapterFromStats(
+                  chapterStats
+                )} ${getPageFromStats(stats)}`
+              );
+            }
+          });
       } else {
         const chapterNumber = chapter.id.split(':').pop();
 
         downloadingCount = chapter.pages.length;
         downloadingNoun = 'pages';
-        downloadPromiseFn = () => download.chapter(chapter.id, downloadPath);
+        downloadPromiseFn = () =>
+          download.chapter(chapter.id, downloadPath, {
+            downloadPath,
+            onPageComplete: stats => {
+              setText(`Downloading chapter ${getPageFromStats(stats)}`);
+            }
+          });
       }
 
-      setText(`Downloading ${downloadingCount} ${downloadingNoun}`);
+      // setText(`Downloading ${downloadingCount} ${downloadingNoun}`);
       await downloadPromiseFn();
       setText(
         `Downloaded ${downloadingCount} ${downloadingNoun} to ${formattedDownloadPath}`
@@ -166,6 +190,6 @@ async function main() {
 }
 
 main().catch(err => {
-  console.error(output.error(err.message, err.stack));
+  console.error(output.error(err.message));
   process.exit(1);
 });

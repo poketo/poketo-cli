@@ -42,7 +42,6 @@ if (cli.input.length < 1) {
 }
 
 const getPoketoErrorMessage = (err, url) => {
-  console.log(err.stack);
   switch (err.code) {
     case 'UNSUPPORTED_SITE':
       return `${url} is not a supported site`;
@@ -137,26 +136,28 @@ async function main() {
 
       const { series, chapter } = metadata;
 
+      const getChapterFromStats = stats =>
+        `(${stats.downloaded} of ${stats.total})`;
+      const getPageFromStats = stats =>
+        `(page ${stats.downloaded} of ${stats.total})`;
+
       if (type === 'series') {
         downloadingCount = series.chapters.length;
         downloadingNoun = 'chapters';
-        let chapterCount = 0;
+
+        let chapterStats = { downloaded: 0, total: downloadingCount };
+
         downloadPromiseFn = () =>
           download.series(series.id, {
             downloadPath,
             onChapterComplete: stats => {
-              chapterCount = stats.downloaded;
-              setText(
-                `Downloading ${downloadingNoun} (${stats.downloaded} of ${
-                  stats.total
-                })`
-              );
+              chapterStats = stats;
             },
             onPageComplete: stats => {
               setText(
-                `Downloading ${downloadingNoun} (${chapterCount} of ${downloadingCount}) (page ${
-                  stats.downloaded
-                } of ${stats.total})`
+                `Downloading chapters ${getChapterFromStats(
+                  chapterStats
+                )} ${getPageFromStats(stats)}`
               );
             }
           });
@@ -169,16 +170,12 @@ async function main() {
           download.chapter(chapter.id, downloadPath, {
             downloadPath,
             onPageComplete: stats => {
-              setText(
-                `Downloading ${downloadingNoun} (${stats.downloaded} of ${
-                  stats.total
-                })`
-              );
+              setText(`Downloading chapter ${getPageFromStats(stats)}`);
             }
           });
       }
 
-      setText(`Downloading ${downloadingCount} ${downloadingNoun}`);
+      // setText(`Downloading ${downloadingCount} ${downloadingNoun}`);
       await downloadPromiseFn();
       setText(
         `Downloaded ${downloadingCount} ${downloadingNoun} to ${formattedDownloadPath}`
@@ -193,6 +190,6 @@ async function main() {
 }
 
 main().catch(err => {
-  console.error(output.error(err.message, err.stack));
+  console.error(output.error(err.message));
   process.exit(1);
 });

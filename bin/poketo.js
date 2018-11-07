@@ -5,7 +5,7 @@ const path = require("path");
 const os = require("os");
 const kleur = require("kleur");
 const meow = require("meow");
-const updateNotifier = require("update-notifier");
+const checkForUpdate = require("update-check");
 const poketo = require("poketo");
 
 const pkg = require("../package.json");
@@ -14,9 +14,6 @@ const download = require("../lib/download");
 const output = require("../lib/output");
 const utils = require("../lib/utils");
 const invariant = require("../lib/utils").invariant;
-
-const notifier = updateNotifier({ pkg });
-notifier.notify();
 
 process.title = "poketo";
 const cli = meow(
@@ -63,6 +60,19 @@ const getPoketoErrorMessage = (err, url) => {
 };
 
 async function main() {
+  let update = null;
+
+  try {
+    update = await checkForUpdate(pkg);
+  } catch (err) {
+    output.error(`Failed to check for updates: ${err}`);
+  }
+
+  if (update) {
+    output.info(`Update available: The latest version is ${update.latest}`);
+    output.info(`npm i -g ${package.name}`);
+  }
+
   const input = cli.input[0];
 
   const type = poketo.getType(input);

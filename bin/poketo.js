@@ -134,6 +134,8 @@ async function main() {
       let downloadingCount;
       let downloadPromiseFn;
 
+      setText(`Fetching chapter information`);
+
       const { series, chapter } = metadata;
 
       const getChapterFromStats = stats =>

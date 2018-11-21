@@ -22,7 +22,7 @@
     "mz": "^2.7.0",
     "ora": "^2.1.0",
     "p-queue": "^3.0.0",
-    "poketo": "^0.4.1",
+    "poketo": "^0.6.4",
     "sanitize-filename": "^1.6.1",
     "sharp": "^0.21.0",
     "single-line-log": "^1.1.2",

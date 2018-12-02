@@ -69,7 +69,7 @@ async function main() {
 
   if (update) {
     output.info(`Update available: The latest version is ${update.latest}`);
-    output.info(`npm i -g ${package.name}`);
+    output.info(`npm i -g ${pkg.name}`);
   }
 
   const input = cli.input[0];

@@ -979,10 +979,10 @@ pify@^3.0.0:
   resolved "https://registry.yarnpkg.com/pify/-/pify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
   integrity sha1-5aSs0sEB/fPZpNB/DbxNtJ3SgXY=
 
-poketo@^0.6.4:
-  version "0.6.4"
-  resolved "https://registry.yarnpkg.com/poketo/-/poketo-0.6.4.tgz#d478b1c9a95bbb622d834865cf06751e8d1e5ccf"
-  integrity sha512-EEOF/MN6xsmcY8QRPnp0lDTCp4lv1yOL59QZdawfj1FWMwjFkllSXBo8y/P6b5Gq6CSD9M7YmV/HPTGCeffaOQ==
+poketo@^0.6.6:
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/poketo/-/poketo-0.6.6.tgz#176d8daa2623f038f04a4f574519f827fd2c484a"
+  integrity sha512-VUhzdf+W9NvT4RIucHZolcDxwpSj5v+pzQ7HIOE95zX0HF8HaguR53dD29LNGSUExVtbHoETRTolcjEURkdZOA==
   dependencies:
     cheerio "^1.0.0-rc.2"
     cookie "^0.3.1"

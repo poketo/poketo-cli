@@ -1,7 +1,7 @@
 {
   "name": "poketo-cli",
   "description": "A CLI for downloading manga from sites across the web.",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "scripts": {
     "format": "prettier --write bin/*.js lib/*.js",
     "test": "echo \"Error: no test specified\" && exit 1"
